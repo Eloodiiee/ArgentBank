@@ -2,6 +2,8 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 
 const apiBaseUrl = "http://localhost:3001/api/v1"
 
+//Permet de récupérer le token
+
 export const loginUser = createAsyncThunk("auth/loginUser", async ({ email, password }, thunkAPI) => {
     try {
         const response = await fetch(`${apiBaseUrl}/user/login`, {
