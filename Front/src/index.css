@@ -257,6 +257,22 @@ body {
     padding: 10px;
 }
 
+.edit-container {
+    display: none;
+}
+
+.open {
+    display: block;
+}
+
+.btns-container,
+.form-container {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-block: 1rem;
+}
+
 .header {
     color: #fff;
     margin-bottom: 2rem;

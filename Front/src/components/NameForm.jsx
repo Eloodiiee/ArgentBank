@@ -1,50 +1,71 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { updateName } from "../Slices/userSlice"
-
-const apiBaseUrl = "http://localhost:3001/api/v1"
+import { getUserProfile, updateName } from "../Slices/userSlice"
 
 const NameForm = () => {
     const dispatch = useDispatch()
     const user = useSelector((state) => state.user)
-    const [firstName, setFirstName] = useState(user.firstName)
-    const [lastName, setLastName] = useState(user.lastName)
-    const handleSubmit = async (e) => {
-        e.preventDefault()
-        try {
-            const response = await fetch(`${apiBaseUrl}/user/profile`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ firstName, lastName }),
-            })
+    const token = localStorage.getItem("jwt")
 
-            if (response.ok) {
-                dispatch(updateName({ firstName, lastName }))
-            } else {
-                console.error("Erreur lors de la mise à jour")
-            }
-        } catch (error) {
-            console.error("Erreur de connexion au serveur", error)
+    const [firstName, setFirstName] = useState("")
+    const [lastName, setLastName] = useState("")
+    const [isOpen, setIsOpen] = useState(false)
+
+    // Utilisation de useEffect pour charger le profil utilisateur
+    useEffect(() => {
+        if (token) {
+            dispatch(getUserProfile(token))
         }
-    }
+    }, [dispatch, token])
 
+    // Mise à jour des champs lorsque le store est mis à jour
+    useEffect(() => {
+        console.log("Redux state updated:", user.firstName, user.lastName) // Vérifie si les données dans Redux sont mises à jour
+        setFirstName(user.firstName)
+        setLastName(user.lastName)
+    }, [user.firstName, user.lastName])
+
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        console.log("Submitting:", firstName, lastName) // Vérifie les données avant soumission
+        // Mise à jour du store avec les nouvelles données
+        dispatch(updateName({ firstName, lastName }))
+        setIsOpen(false)
+    }
+    const editName = () => {
+        setIsOpen(!isOpen)
+        setFirstName("")
+        setLastName("")
+    }
     return (
         <div className="edit-button-container">
-            <form onSubmit={handleSubmit}>
-                <div className="edit-container">
-                    <span>
-                        <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="Firstname" />
-                    </span>
-                    <span>
-                        <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Lastname" />
-                    </span>
-                    <button className="edit-button" type="submit">
-                        Edit Name
-                    </button>
-                </div>
-            </form>
+            {!isOpen && (
+                <button className="edit-button" type="button" onClick={editName}>
+                    Edit Name
+                </button>
+            )}
+            {isOpen && (
+                <form onSubmit={handleSubmit}>
+                    <div className={`edit-container ${isOpen ? "open" : ""}`}>
+                        <div className="form-container">
+                            <span>
+                                <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder={user.firstName} />
+                            </span>
+                            <span>
+                                <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder={user.lastName} />
+                            </span>
+                        </div>
+                        <div className="btns-container">
+                            <button className="edit-button" type="submit">
+                                Save
+                            </button>
+                            <button className="edit-button" type="button" onClick={editName}>
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            )}
         </div>
     )
 }
