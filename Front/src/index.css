@@ -24,6 +24,11 @@ body {
     padding: 5px 20px;
 }
 
+.main-nav div {
+    display: flex;
+    gap: 1rem;
+}
+
 .main-nav a {
     font-weight: bold;
     color: #2c3e50;
@@ -34,12 +39,16 @@ body {
 }
 
 .main-nav-item {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 20px;
     text-decoration: none;
     margin-right: 0.5rem;
+    font-weight: 700;
 }
 
 .main-nav-item:hover {
-    text-decoration: underline;
+    text-decoration: none;
 }
 
 .main-nav-logo {
@@ -54,6 +63,7 @@ body {
 
 .bg-dark {
     background-color: #12002b;
+    padding-block: 2rem;
 }
 
 .sr-only {
@@ -170,7 +180,6 @@ body {
     width: 420px;
     height: 489px;
     margin: 0px auto;
-    margin-top: 3rem;
     padding: 4rem;
 }
 

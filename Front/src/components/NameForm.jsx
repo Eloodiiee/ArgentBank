@@ -7,8 +7,8 @@ const NameForm = () => {
     const user = useSelector((state) => state.user)
     const token = localStorage.getItem("jwt")
 
-    const [firstName, setFirstName] = useState("")
-    const [lastName, setLastName] = useState("")
+    const [firstName, setFirstName] = useState(user.firstName)
+    const [lastName, setLastName] = useState(user.lastName)
     const [isOpen, setIsOpen] = useState(false)
 
     // Utilisation de useEffect pour charger le profil utilisateur
@@ -34,8 +34,8 @@ const NameForm = () => {
     }
     const editName = () => {
         setIsOpen(!isOpen)
-        setFirstName("")
-        setLastName("")
+        setFirstName(user.firstName)
+        setLastName(user.lastName)
     }
     return (
         <div className="edit-button-container">
