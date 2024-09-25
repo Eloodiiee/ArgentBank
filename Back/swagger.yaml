@@ -158,6 +158,33 @@ paths:
                 "404":
                     description: Account not found
 
+    # Nouveau : Récupère une transaction spécifique par son ID
+    /transactions/{transactionId}:
+        get:
+            security:
+                - Bearer: []
+            tags:
+                - Transactions
+            summary: Get Transaction by ID
+            description: Retrieves the details of a specific transaction using its unique identifier.
+            parameters:
+                - in: path
+                  name: transactionId
+                  required: true
+                  type: string
+                  description: Unique identifier of the transaction to retrieve.
+            produces:
+                - application/json
+            responses:
+                "200":
+                    description: Transaction retrieved successfully
+                    schema:
+                        $ref: "#/definitions/Transaction"
+                "401":
+                    description: Unauthorized
+                "404":
+                    description: Transaction not found
+
     # Nouveau: Mise à jour de la catégorie de la transaction
     /transactions/{transactionId}/category:
         put:
