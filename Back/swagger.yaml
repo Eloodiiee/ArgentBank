@@ -33,6 +33,7 @@ paths:
                     description: Invalid Fields
                 "500":
                     description: Internal Server Error
+
     /user/signup:
         post:
             tags:
@@ -57,24 +58,26 @@ paths:
                     description: Invalid Fields
                 "500":
                     description: Internal Server Error
+
     /user/profile:
         post:
             security:
                 - Bearer: []
             tags:
                 - User Module
-            summary: User Profile API
+            summary: Fetch User Profile
             description: API for fetching a user profile
             parameters:
                 - in: header
                   name: Authorization
                   description: Attach Bearer JWT token
                   required: true
+                  type: string
             produces:
                 - application/json
             responses:
                 "200":
-                    description: User profile retrieved successully
+                    description: User profile retrieved successfully
                     schema:
                         $ref: "#/definitions/ApiResponse"
                 "400":
@@ -86,13 +89,14 @@ paths:
                 - Bearer: []
             tags:
                 - User Module
-            summary: User Profile API
+            summary: Update User Profile
             description: API for updating a user profile
             parameters:
                 - in: header
                   name: Authorization
                   description: Attach Bearer JWT token
                   required: true
+                  type: string
                 - in: body
                   name: body
                   description: Update user profile attributes
@@ -103,7 +107,7 @@ paths:
                 - application/json
             responses:
                 "200":
-                    description: User profile retrieved successully
+                    description: User profile updated successfully
                     schema:
                         $ref: "#/definitions/ApiResponse"
                 "400":
@@ -159,7 +163,7 @@ paths:
                     description: Account not found
 
     # Nouveau : Récupère une transaction spécifique par son ID
-    /transactions/{transactionId}:
+    /transactions/{transactionId}/:
         get:
             security:
                 - Bearer: []
@@ -182,6 +186,28 @@ paths:
                         $ref: "#/definitions/Transaction"
                 "401":
                     description: Unauthorized
+                "404":
+                    description: Transaction not found
+
+        # Nouveau : Supprimer une transaction
+        delete:
+            security:
+                - Bearer: []
+            tags:
+                - Transactions
+            summary: Delete a Transaction
+            description: API to delete a financial transaction.
+            parameters:
+                - in: path
+                  name: transactionId
+                  required: true
+                  type: string
+                  description: Unique identifier of the transaction to delete.
+            responses:
+                "200":
+                    description: Transaction deleted successfully.
+                "401":
+                    description: Unauthorized.
                 "404":
                     description: Transaction not found
 
@@ -240,29 +266,6 @@ paths:
                     description: Transaction notes updated successfully.
                 "400":
                     description: Invalid transaction notes data.
-                "401":
-                    description: Unauthorized.
-                "404":
-                    description: Transaction not found
-
-    # Nouveau : Supprimer une transaction
-    /transactions/{transactionId}:
-        delete:
-            security:
-                - Bearer: []
-            tags:
-                - Transactions
-            summary: Delete a Transaction
-            description: API to delete a financial transaction.
-            parameters:
-                - in: path
-                  name: transactionId
-                  type: string
-                  required: true
-                  description: Unique identifier of the transaction to delete.
-            responses:
-                "200":
-                    description: Transaction deleted successfully.
                 "401":
                     description: Unauthorized.
                 "404":
@@ -389,12 +392,3 @@ definitions:
                 description: The new notes for the transaction.
         required:
             - notes
-
-    DeleteTransaction:
-        type: object
-        properties:
-            id:
-                type: string
-                description: Unique identifier of the transaction to be deleted.
-        required:
-            - id
