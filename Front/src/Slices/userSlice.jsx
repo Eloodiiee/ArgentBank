@@ -1,6 +1,8 @@
 // Importation de la fonction createSlice depuis Redux Toolkit pour créer le slice utilisateur
-import { createSlice } from "@reduxjs/toolkit"
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 
+// URL de base de l'API
+const apiBaseUrl = "http://localhost:3001/api/v1"
 // État initial pour le slice utilisateur
 const initialState = {
     firstName: "", // Prénom de l'utilisateur (initialement vide)
@@ -9,43 +11,70 @@ const initialState = {
     error: null, // Contient les messages d'erreur en cas de problème lors de la récupération des données
 }
 
-// Création d'un slice pour l'utilisateur
+// Création du slice utilisateur
 const userSlice = createSlice({
-    name: "user", // Nom du slice
-    initialState, // Utilisation de l'état initial défini ci-dessus
+    name: "user",
+    initialState,
     reducers: {
-        // Action déclenchée lorsque la récupération du profil utilisateur commence
         fetchUserProfileStart: (state) => {
-            state.loading = true // Active l'indicateur de chargement
-            state.error = null // Réinitialise l'erreur pour un nouveau départ
+            state.loading = true
+            state.error = null
         },
-        // Action déclenchée lorsque la récupération du profil utilisateur réussit
         fetchUserProfileSuccess: (state, action) => {
-            state.firstName = action.payload.firstName // Met à jour le prénom de l'utilisateur
-            state.lastName = action.payload.lastName // Met à jour le nom de famille de l'utilisateur
-            state.loading = false // Désactive l'indicateur de chargement après succès
+            state.firstName = action.payload.firstName
+            state.lastName = action.payload.lastName
+            state.loading = false
         },
-        // Action déclenchée lorsque la récupération du profil utilisateur échoue
         fetchUserProfileFailure: (state, action) => {
-            state.loading = false // Désactive l'indicateur de chargement
-            state.error = action.payload // Enregistre le message d'erreur dans l'état
-        },
-        // Action pour mettre à jour le nom de l'utilisateur manuellement
-        updateName: (state, action) => {
-            state.firstName = action.payload.firstName // Met à jour le prénom de l'utilisateur
-            state.lastName = action.payload.lastName // Met à jour le nom de famille de l'utilisateur
+            state.loading = false
+            state.error = action.payload
         },
     },
+    extraReducers: (builder) => {
+        // Gestion de la mise à jour du profil utilisateur
+        builder.addCase(updateUserProfile.fulfilled, (state, action) => {
+            state.firstName = action.payload.body.firstName // Met à jour le prénom avec la réponse de l'API
+            state.lastName = action.payload.body.lastName // Met à jour le nom de famille
+            state.loading = false
+        })
+        builder.addCase(updateUserProfile.pending, (state) => {
+            state.loading = true
+        })
+        builder.addCase(updateUserProfile.rejected, (state, action) => {
+            state.loading = false
+            state.error = action.payload
+        })
+    },
+})
+
+// Thunk met à jour le profil utilisateur avec fetch
+export const updateUserProfile = createAsyncThunk("user/updateUserProfile", async ({ token, firstName, lastName }, thunkAPI) => {
+    try {
+        const response = await fetch(`${apiBaseUrl}/user/profile`, {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ firstName, lastName }), // Envoie les données en format JSON
+        })
+
+        if (!response.ok) {
+            throw new Error("Failed to update user profile")
+        }
+
+        const data = await response.json() // Retourne les nouvelles données utilisateur
+        return data
+    } catch (error) {
+        return thunkAPI.rejectWithValue(error.message)
+    }
 })
 
 // Exportation des actions générées automatiquement par createSlice
 export const { fetchUserProfileStart, fetchUserProfileSuccess, fetchUserProfileFailure, updateName } = userSlice.actions
 
-// URL de base de l'API
-const apiBaseUrl = "http://localhost:3001/api/v1"
-
 // Fonction asynchrone pour récupérer le profil utilisateur depuis l'API
-// Elle utilise un token JWT pour authentifier la requête
+// Et utilise un token JWT pour authentifier la requête
 export const getUserProfile = (token) => async (dispatch) => {
     // Démarre la récupération du profil utilisateur
     dispatch(fetchUserProfileStart())
@@ -65,14 +94,14 @@ export const getUserProfile = (token) => async (dispatch) => {
 
         // Vérification de la validité de la réponse et des données reçues
         if (!response.ok || !data.body) {
-            throw new Error("Failed to fetch profile") // Lève une erreur en cas de problème
+            throw new Error("Failed to fetch profile") // Envoie erreur en cas de problème
         }
 
         // Envoie une action pour mettre à jour l'état avec les informations de l'utilisateur
         dispatch(
             fetchUserProfileSuccess({
                 firstName: data.body.firstName, // Prénom reçu de l'API
-                lastName: data.body.lastName, // Nom de famille reçu de l'API
+                lastName: data.body.lastName, // Nom reçu de l'API
             })
         )
     } catch (error) {

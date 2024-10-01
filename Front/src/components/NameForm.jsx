@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { getUserProfile, updateName } from "../Slices/userSlice"
+import { getUserProfile, updateUserProfile } from "../Slices/userSlice"
 
 const NameForm = () => {
     const dispatch = useDispatch()
-    const user = useSelector((state) => state.user)
+    const user = useSelector((state) => state.user) // Sélection des données utilisateur dans le store
     const token = localStorage.getItem("jwt")
 
     const [firstName, setFirstName] = useState(user.firstName)
@@ -14,29 +14,28 @@ const NameForm = () => {
     // Utilisation de useEffect pour charger le profil utilisateur
     useEffect(() => {
         if (token) {
-            dispatch(getUserProfile(token))
+            dispatch(getUserProfile(token)) // Récupère le profil utilisateur lors du montage du composant
         }
     }, [dispatch, token])
 
     // Mise à jour des champs lorsque le store est mis à jour
     useEffect(() => {
-        console.log("Redux state updated:", user.firstName, user.lastName) // Vérifie si les données dans Redux sont mises à jour
-        setFirstName(user.firstName)
+        setFirstName(user.firstName) // Mise à jour locale lorsque l'état Redux change
         setLastName(user.lastName)
     }, [user.firstName, user.lastName])
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        console.log("Submitting:", firstName, lastName) // Vérifie les données avant soumission
-        // Mise à jour du store avec les nouvelles données
-        dispatch(updateName({ firstName, lastName }))
-        setIsOpen(false)
+        dispatch(updateUserProfile({ token, firstName, lastName })) // Mise à jour du profil utilisateur
+        setIsOpen(false) // Ferme le formulaire après la soumission
     }
+
     const editName = () => {
-        setIsOpen(!isOpen)
-        setFirstName(user.firstName)
+        setIsOpen(!isOpen) // Ouverture/fermeture du formulaire d'édition
+        setFirstName(user.firstName) // Réinitialise les champs avec les données actuelles
         setLastName(user.lastName)
     }
+
     return (
         <div className="edit-button-container">
             {!isOpen && (
