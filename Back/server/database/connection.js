@@ -3,7 +3,7 @@ const databaseUrl = process.env.DATABASE_URL || "mongodb://127.0.0.1:27017/argen
 
 module.exports = async () => {
     try {
-        await mongoose.connect(databaseUrl, { useNewUrlParser: true, useUnifiedTopology: true })
+        await mongoose.connect(databaseUrl, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false })
         console.log("Database successfully connected")
     } catch (error) {
         console.error(`Database Connectivity Error: ${error}`)
