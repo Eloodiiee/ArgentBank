@@ -249,7 +249,7 @@ paths:
 
     # Nouveau: Mise à jour de la catégorie de la transaction
     /user/{userId}/account/{accountId}/transactions/{transactionId}/category:
-        put:
+        patch:
             security:
                 - Bearer: []
             tags:
@@ -289,7 +289,7 @@ paths:
 
     # Nouveau : Mise à jour des notes de transaction
     /user/{userId}/account/{accountId}/transactions/{transactionId}/notes:
-        put:
+        patch:
             security:
                 - Bearer: []
             tags:
