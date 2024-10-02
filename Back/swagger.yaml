@@ -116,13 +116,23 @@ paths:
                     description: Internal Server Error
 
     # Nouveau : Création d'une transaction
-    /transactions:
+    /user/{userId}/account/{accountId}/transactions/NewTransaction:
         post:
             tags:
                 - Transactions
             summary: Create a New Transaction
             description: Allows a user to create a financial transaction on their account.
             parameters:
+                - in: path
+                  name: userId
+                  required: true
+                  type: string
+                  description: Unique identifier of the user.
+                - in: path
+                  name: accountId
+                  required: true
+                  type: string
+                  description: Unique identifier of the account.
                 - in: body
                   name: body
                   required: true
@@ -139,7 +149,7 @@ paths:
                     description: Invalid transaction data
 
     # Nouveau : Récupère les transactions d'un compte spécifique
-    /transactions/{accountId}:
+    /user/{userId}/account/{accountId}/transactions:
         get:
             tags:
                 - Transactions
@@ -147,9 +157,15 @@ paths:
             description: Retrieves a list of transactions for a specific account
             parameters:
                 - in: path
+                  name: userId
+                  required: true
+                  type: string
+                  description: Unique identifier of the user.
+                - in: path
                   name: accountId
                   required: true
                   type: string
+                  description: Unique identifier of the account.
             produces:
                 - application/json
             responses:
@@ -163,7 +179,7 @@ paths:
                     description: Account not found
 
     # Nouveau : Récupère une transaction spécifique par son ID
-    /transactions/{transactionId}/:
+    /user/{userId}/account/{accountId}/transactions/{transactionId}:
         get:
             security:
                 - Bearer: []
@@ -172,6 +188,16 @@ paths:
             summary: Get Transaction by ID
             description: Retrieves the details of a specific transaction using its unique identifier.
             parameters:
+                - in: path
+                  name: userId
+                  required: true
+                  type: string
+                  description: Unique identifier of the user.
+                - in: path
+                  name: accountId
+                  required: true
+                  type: string
+                  description: Unique identifier of the account.
                 - in: path
                   name: transactionId
                   required: true
@@ -199,6 +225,16 @@ paths:
             description: API to delete a financial transaction.
             parameters:
                 - in: path
+                  name: userId
+                  required: true
+                  type: string
+                  description: Unique identifier of the user.
+                - in: path
+                  name: accountId
+                  required: true
+                  type: string
+                  description: Unique identifier of the account.
+                - in: path
                   name: transactionId
                   required: true
                   type: string
@@ -212,7 +248,7 @@ paths:
                     description: Transaction not found
 
     # Nouveau: Mise à jour de la catégorie de la transaction
-    /transactions/{transactionId}/category:
+    /user/{userId}/account/{accountId}/transactions/{transactionId}/category:
         put:
             security:
                 - Bearer: []
@@ -221,6 +257,16 @@ paths:
             summary: Update Transaction Category
             description: API to update the category of a financial transaction.
             parameters:
+                - in: path
+                  name: userId
+                  required: true
+                  type: string
+                  description: Unique identifier of the user.
+                - in: path
+                  name: accountId
+                  required: true
+                  type: string
+                  description: Unique identifier of the account.
                 - in: path
                   name: transactionId
                   required: true
@@ -242,7 +288,7 @@ paths:
                     description: Transaction not found
 
     # Nouveau : Mise à jour des notes de transaction
-    /transactions/{transactionId}/notes:
+    /user/{userId}/account/{accountId}/transactions/{transactionId}/notes:
         put:
             security:
                 - Bearer: []
@@ -251,6 +297,16 @@ paths:
             summary: Update Transaction Notes
             description: API to update the notes of a financial transaction.
             parameters:
+                - in: path
+                  name: userId
+                  required: true
+                  type: string
+                  description: Unique identifier of the user.
+                - in: path
+                  name: accountId
+                  required: true
+                  type: string
+                  description: Unique identifier of the account.
                 - in: path
                   name: transactionId
                   required: true
